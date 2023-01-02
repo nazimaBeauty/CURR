@@ -1,9 +1,11 @@
 package com.example.convertercurrency;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -51,7 +53,6 @@ public class CalculatePage extends AppCompatActivity implements View.OnClickList
             course = Double.parseDouble(tempList2[1].replace(',', '.'));
 
             defaultCurrency = tempList2[0];
-            System.out.println(tempList[1]+"**************************");
             units = Double.parseDouble(tempList2[2].replace(',', '.'));
 
 
@@ -119,6 +120,11 @@ public class CalculatePage extends AppCompatActivity implements View.OnClickList
     }
 
     private void init() {
+        ConstraintLayout constraintLayout = findViewById(R.id.calculateLayout);
+        AnimationDrawable animationDrawable = (AnimationDrawable) constraintLayout.getBackground();
+        animationDrawable.setEnterFadeDuration(1500);
+        animationDrawable.setExitFadeDuration(2000);
+        animationDrawable.start();
         ans1 = findViewById(R.id.ans1);
         ans2 = findViewById(R.id.ans2);
 

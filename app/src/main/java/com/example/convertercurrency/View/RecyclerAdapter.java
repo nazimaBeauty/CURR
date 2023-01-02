@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -19,7 +20,7 @@ import java.util.List;
 
 public class RecyclerAdapter extends ArrayAdapter<ListCurrency> {
     private final LayoutInflater inflater;
-    private final List<ListCurrency> list;
+    private List<ListCurrency> list;
 
     public RecyclerAdapter(@NonNull Context context, int resource, List<ListCurrency> list, LayoutInflater inflater) {
         super(context, resource, list);
@@ -28,11 +29,9 @@ public class RecyclerAdapter extends ArrayAdapter<ListCurrency> {
     }
 
     @SuppressLint("InflateParams")
-    @NonNull
     @Override
-    public View getView(int position, @NonNull View convertView, @NonNull ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         ViewHolder viewHolder;
-        ListCurrency listCurrency = list.get(position);
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.list_item, null, false);
             viewHolder = new ViewHolder();
@@ -45,23 +44,43 @@ public class RecyclerAdapter extends ArrayAdapter<ListCurrency> {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        viewHolder.first.setText(listCurrency.getNumberCode());
-        viewHolder.second.setText(listCurrency.getNameCode());
-        viewHolder.third.setText(listCurrency.getUnits());
-        viewHolder.fourth.setText(listCurrency.getCurrencyName());
-        viewHolder.fifth.setText(listCurrency.getCourse());
+        viewHolder.first.setText(list.get(position).getNumberCode());
+        viewHolder.second.setText(list.get(position).getNameCode());
+        viewHolder.third.setText(list.get(position).getUnits());
+        viewHolder.fourth.setText(list.get(position).getCurrencyName());
+        viewHolder.fifth.setText(list.get(position).getCourse());
+
         convertView.setOnClickListener(view -> {
-            Intent calculate = new Intent(getContext(), CalculatePage.class);
-            calculate.putExtra("NUMCODE", viewHolder.first.getText().toString());
-            calculate.putExtra("ALPHCODE", viewHolder.second.getText().toString());
-            calculate.putExtra("UNIT", viewHolder.third.getText().toString());
-            calculate.putExtra("NAMECUR", viewHolder.fourth.getText().toString());
-            calculate.putExtra("COURSE", viewHolder.fifth.getText().toString());
-            calculate.putExtra("TYPE", "NAN");
-            getContext().startActivity(calculate);
+            if (isString(viewHolder.first.getText().toString())) {
+                Intent calculate = new Intent(getContext(), CalculatePage.class);
+                calculate.putExtra("NUMCODE", viewHolder.first.getText().toString());
+                calculate.putExtra("ALPHCODE", viewHolder.second.getText().toString());
+                calculate.putExtra("UNIT", viewHolder.third.getText().toString());
+                calculate.putExtra("NAMECUR", viewHolder.fourth.getText().toString());
+                calculate.putExtra("COURSE", viewHolder.fifth.getText().toString());
+                calculate.putExtra("TYPE", "NAN");
+                getContext().startActivity(calculate);
+            } else {
+                Toast.makeText(getContext(), "Вы не можете найти баг :)", Toast.LENGTH_SHORT).show();
+            }
         });
 
         return convertView;
+    }
+
+    private boolean isString(String s) {
+        boolean checker = false;
+        for (int i = 0; i < s.length(); i++) {
+            if ((int) s.charAt(i) >= 48 && (int) s.charAt(i) <= 57) {
+                checker = true;
+            }
+        }
+        return checker;
+    }
+
+    public void filterList(List<ListCurrency> filteredlist) {
+        this.list = filteredlist;
+        notifyDataSetChanged();
     }
 
     private static class ViewHolder {
